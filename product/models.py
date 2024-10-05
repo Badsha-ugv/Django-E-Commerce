@@ -38,3 +38,27 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.name} from {self.category.name}'
 
+class VariantManager(models.Manager):
+    def color(self):
+        return self.filter(variant_type='COLOR', status=True)
+    def size(self):
+        return self.filter(variant_type='SIZE', status=True)
+    
+    
+
+class Product_variant(models.Model):
+    VARIANT_TYPE = (
+        ('COLOR', 'COLOR'),
+        ('SIZE', 'SIZE'),
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='variants')
+    variant_type = models.CharField(max_length=10, choices=VARIANT_TYPE)
+    variant_value = models.CharField(max_length=100, blank=True)
+    status = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    objects = VariantManager()
+
+    def __str__(self):
+        return f'{self.variant_type}: {self.variant_value}'
+

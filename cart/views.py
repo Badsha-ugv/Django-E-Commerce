@@ -34,6 +34,12 @@ def _cart_id(request):
     return cart 
 
 def add_to_cart(request,product_id):
+
+    if request.method == 'POST':
+        color = request.POST.get('color')
+        size = request.POST.get('size')
+        print('color and size',color,size)
+
     product = get_object_or_404(Product, id=product_id)
 
     try:
