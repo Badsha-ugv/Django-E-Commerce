@@ -71,7 +71,13 @@
         </div> <!-- row.// -->
         <hr>
         {% if product.stock > 0   %}
+        {% if in_cart %}
+
+        <a href="{% url 'add_to_cart' product.id %}" class="btn  btn-primary disabled" > <span class="text">Added to Cart </span> <i class="fas fa-check"></i>  </a>
+        <a href="{% url 'cart' %}" class="btn btn-success">Goto Cart</a>
+        {% else %}
         <a href="{% url 'add_to_cart' product.id %}" class="btn  btn-primary"> <span class="text">Add to cart</span> <i class="fas fa-shopping-cart"></i>  </a>
+        {% endif %}
         {% else %}
         <h5 style="color:red;">Out of stock</h5>
         {% endif %}
