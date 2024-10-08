@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
-from product.models import Product 
+from product.models import Product, Product_variant
 from .models import Cart, CartItem
 # Create your views here.
 def cart(request, total=0, quantity=0, cart_item=None):
@@ -34,13 +34,23 @@ def _cart_id(request):
     return cart 
 
 def add_to_cart(request,product_id):
-
-    if request.method == 'POST':
-        color = request.POST.get('color')
-        size = request.POST.get('size')
-        print('color and size',color,size)
-
     product = get_object_or_404(Product, id=product_id)
+    variation = []
+    if request.method == 'POST':
+        for item in request.POST:
+            key = item
+            value = request.POST[key]
+            print(f'key {key} val {value}')
+
+            try:
+                v = Product_variant.objects.get(product=product, variant_type__iexact = key, variant_value__iexact = value)
+                variation.append(v)
+            except:
+                pass 
+        print('variations', variation)
+        # exit()
+        
+
 
     try:
         cart = Cart.objects.get(cart_id=_cart_id(request))
@@ -50,11 +60,20 @@ def add_to_cart(request,product_id):
     
     try:
         cart_item = CartItem.objects.get(product=product, cart=cart)
+        if len(variation) > 0:
+            cart_item.variants.clear()
+            for item in variation:
+                cart_item.variants.add(item)
         cart_item.quantity += 1
         cart_item.save()
     except CartItem.DoesNotExist:
         cart_item = CartItem.objects.create(product=product, cart=cart, quantity=1)
+        if len(variation) > 0:
+            cart_item.variants.clear()
+            for item in variation:
+                cart_item.variants.add(item)
         cart_item.save()
+        
     print(cart_item.product)
     return redirect('cart')
 

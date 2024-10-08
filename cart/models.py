@@ -1,6 +1,7 @@
 from django.db import models
 
 from product.models import Product
+from product.models import Product_variant
 
 class Cart(models.Model):
     cart_id = models.CharField(max_length=10)
@@ -16,6 +17,7 @@ class CartItem(models.Model):
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    variants = models.ManyToManyField(Product_variant, null=True)
 
     def get_subtotal(self):
         return self.product.price * self.quantity
